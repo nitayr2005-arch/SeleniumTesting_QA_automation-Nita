@@ -1,0 +1,9 @@
+username,password,expected
+student,Password123,PASS
+student,salah123,FAIL
+admin,Password123,FAIL
+student,123,FAIL
+wronguser,Password123,FAIL
+student,,FAIL
+,Password123,FAIL
+student,Password123,FAIL
