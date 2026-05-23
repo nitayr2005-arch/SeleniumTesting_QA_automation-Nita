@@ -1,26 +1,27 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 import os
-import csv
 
 @pytest.fixture
 def driver():
     options = webdriver.ChromeOptions()
     options.add_argument('--start-maximized')
 
-    # Headless mode aktif saat jalan di GitHub Actions
     if os.getenv('CI'):
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--disable-gpu')
+        options.add_argument('--window-size=1920,1080')
+        d = webdriver.Chrome(options=options)
+    else:
+        from webdriver_manager.chrome import ChromeDriverManager
+        d = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options
+        )
 
-    d = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
-        options=options
-    )
     yield d
     d.quit()
 
@@ -29,14 +30,15 @@ def login_page(driver):
     from pages.login_page import LoginPage
     return LoginPage(driver)
 
-# Fungsi baca CSV untuk DDT
+import os
+import csv
+
 def load_csv(filename):
     filepath = os.path.join('data', filename)
     with open(filepath, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return [row for row in reader]
 
-# Screenshot otomatis saat test FAIL
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
