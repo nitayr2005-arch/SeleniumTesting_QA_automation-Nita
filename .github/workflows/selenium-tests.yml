@@ -2,9 +2,11 @@ name: Selenium QA Tests
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -25,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Selenium Tests (Headless)
+      - name: Run Selenium Tests
         run: |
           pytest tests/ -v
 
