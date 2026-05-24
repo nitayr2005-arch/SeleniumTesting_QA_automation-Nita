@@ -1,27 +1,19 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 import os
+import csv
 
 @pytest.fixture
 def driver():
     options = webdriver.ChromeOptions()
-    options.add_argument('--start-maximized')
-
-    if os.getenv('CI'):
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--window-size=1920,1080')
-        d = webdriver.Chrome(options=options)
-    else:
-        from webdriver_manager.chrome import ChromeDriverManager
-        d = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options
-        )
-
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
+    options.add_argument('--headless=new')
+    options.add_argument('--remote-debugging-port=9222')
+    
+    d = webdriver.Chrome(options=options)
     yield d
     d.quit()
 
@@ -29,9 +21,6 @@ def driver():
 def login_page(driver):
     from pages.login_page import LoginPage
     return LoginPage(driver)
-
-import os
-import csv
 
 def load_csv(filename):
     filepath = os.path.join('data', filename)
